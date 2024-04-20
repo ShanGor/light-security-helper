@@ -11,22 +11,25 @@ import java.util.Locale;
 import java.util.Optional;
 
 @Slf4j
-public abstract class AbstractSecurityFilter implements Filter {
+public abstract class AbstractSecurityFilter extends FilterCommon implements Filter {
 
-    public abstract List<AuthRule> getAuthorizationRules();
-
-    public abstract Optional<AuthUser> getAuthUser(HttpServletRequest request);
+    protected abstract Optional<AuthUser> getAuthUser(HttpServletRequest request);
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         var request = (HttpServletRequest) servletRequest;
         var response = (HttpServletResponse) servletResponse;
-        var a = getAuthUser(request);
         AuthUser user = AuthUser.ANONYMOUS_USER;
-        if (a.isPresent()) {
-            user = a.get();
+        try {
+            var a = getAuthUser(request);
+            if (a.isPresent()) {
+                user = a.get();
+            }
+            request.setAttribute(AuthUser.AUTH_USER, user);
+        } catch (Exception e) {
+            ResponseUtil.returnWith(401, e.getMessage(), response);
+            return;
         }
-        request.setAttribute(AuthUser.AUTH_USER, user);
 
         var rules = getAuthorizationRules();
         if (rules != null && !rules.isEmpty()) {
@@ -35,14 +38,9 @@ public abstract class AbstractSecurityFilter implements Filter {
                     if (rule.getType().equals(AuthRule.RuleType.ANONYMOUS)
                             || (rule.getType().equals(AuthRule.RuleType.AUTHENTICATED) && !user.isAnonymous())
                             || (rule.getType().equals(AuthRule.RuleType.HAS_ROLE) && matchesRole(user.getRoles(), rule.getRoles()))) {
-                        filterChain.doFilter(servletRequest, servletResponse);
-                        return;
+                        break;
                     } else {
-                        response.setStatus(401);
-                        try (var out = response.getWriter()){
-                            out.println("Unauthorized");
-                            out.flush();
-                        }
+                        ResponseUtil.returnWith(401, "Current action is not authorized!", response);
                         return;
                     }
                 }

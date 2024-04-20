@@ -13,13 +13,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import static cn.gzten.security.security.AuthContext.AUTH_HEADER_ID;
 
 @Slf4j
-public abstract class AbstractReactiveSecurityFilter implements WebFilter {
-
-    public abstract List<AuthRule> getAuthorizationRules();
-
-    public abstract Optional<AuthUser> getAuthUser(ServerHttpRequest request);
+public abstract class AbstractReactiveSecurityFilter extends FilterCommon implements WebFilter {
 
     public static final Map<String, AuthUser> authUserMap = new ConcurrentHashMap<>();
+
+    protected abstract Optional<AuthUser> getAuthUser(ServerHttpRequest request);
 
     @Override
     public Mono<Void> filter(ServerWebExchange serverWebExchange,
@@ -27,10 +25,14 @@ public abstract class AbstractReactiveSecurityFilter implements WebFilter {
         var requestId = UUID.randomUUID().toString();
         var request = serverWebExchange.getRequest().mutate().header(AUTH_HEADER_ID, requestId).build();
         var response = serverWebExchange.getResponse();
-        var a = getAuthUser(request);
         AuthUser user = AuthUser.ANONYMOUS_USER;
-        if (a.isPresent()) {
-            user = a.get();
+        try {
+            var a = getAuthUser(request);
+            if (a.isPresent()) {
+                user = a.get();
+            }
+        } catch (Exception e) {
+            return ResponseUtil.returnWith(401, e.getMessage(), response);
         }
 
         authUserMap.put(requestId, user);
@@ -44,8 +46,7 @@ public abstract class AbstractReactiveSecurityFilter implements WebFilter {
                             || (rule.getType().equals(AuthRule.RuleType.HAS_ROLE) && matchesRole(user.getRoles(), rule.getRoles()))) {
                         break;
                     } else {
-                        response.setRawStatusCode(401);
-                        return response.setComplete();
+                        ResponseUtil.returnWith(401, "Current action is not authorized!", response);
                     }
                 }
             }
