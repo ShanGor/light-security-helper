@@ -8,7 +8,7 @@ So I created this library to help you to do simple and fast security configurati
 
 ## Usage For Spring MVC
 - Add the dependency to your pom.xml
-- Implement your `SecurityFilter` to extend the `AbstractSecurityFilter`
+- Implement your `SecurityFilter` to extend the `AbstractSecurityFilter`. (Further more do `AbstractSecurityFilterForJwt`)
   ```
   @Slf4j
   @Configuration
@@ -33,3 +33,31 @@ So I created this library to help you to do simple and fast security configurati
         return user;
     }
    ```
+## Usage For Webflux
+- Add the dependency to your pom.xml
+- Implement your `SecurityFilter` to extend the `AbstractReactiveSecurityFilter`  (Further more do `AbstractReactiveSecurityFilterForJwt`)
+  ```
+  @Component
+  @Order(1)
+  public class SecurityFilter extends AbstractReactiveSecurityFilter {
+    @Override
+    public List<AuthRule> getAuthorizationRules() {
+      return List.of(new AuthRuleExactMatch("/test-security", AuthRule.ALL_METHODS, AuthRule.RuleType.AUTHENTICATED, null));
+    }
+    
+    @Override
+    public Optional<AuthUser> getAuthUser(ServerHttpRequest request) {
+      var token = tryToGetHeader("Authorization", request);
+      return Optional.empty();
+    }
+  }
+  ```
+- Inject `AuthUser` with `ServerHttpRequest` then retrieve user by `AuthContext.getAuthUser(request)`
+  ```
+   @GetMapping("/test-security")
+   public AuthUser test(ServerHttpRequest request) {
+       var result = AuthContext.getAuthUser(request);
+       log.info("test-security: {}", result);
+       return result;
+   }
+  ```
