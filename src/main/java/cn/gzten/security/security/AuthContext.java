@@ -4,12 +4,12 @@ import io.micrometer.common.util.StringUtils;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 
 public class AuthContext {
-    public static final String AUTH_HEADER_ID = "Auth-Security-Id";
     public static AuthUser getAuthUser(ServerHttpRequest request) {
-        var requestId = request.getHeaders().getFirst(AUTH_HEADER_ID);
+        var requestId = request.getId();
         if (StringUtils.isBlank(requestId)) {
             return null;
         }
-        return AbstractReactiveSecurityFilter.authUserMap.get(requestId);
+        var res = AbstractReactiveSecurityFilter.authUserMap.get(requestId);
+        return res;
     }
 }

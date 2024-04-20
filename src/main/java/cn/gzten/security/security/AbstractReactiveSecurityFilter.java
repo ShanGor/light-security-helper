@@ -10,8 +10,6 @@ import reactor.core.publisher.Mono;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static cn.gzten.security.security.AuthContext.AUTH_HEADER_ID;
-
 @Slf4j
 public abstract class AbstractReactiveSecurityFilter extends FilterCommon implements WebFilter {
 
@@ -22,8 +20,9 @@ public abstract class AbstractReactiveSecurityFilter extends FilterCommon implem
     @Override
     public Mono<Void> filter(ServerWebExchange serverWebExchange,
                              WebFilterChain webFilterChain) {
-        var requestId = UUID.randomUUID().toString();
-        var request = serverWebExchange.getRequest().mutate().header(AUTH_HEADER_ID, requestId).build();
+
+        var request = serverWebExchange.getRequest();
+        var requestId = request.getId();
         var response = serverWebExchange.getResponse();
         AuthUser user = AuthUser.ANONYMOUS_USER;
         try {
@@ -34,8 +33,11 @@ public abstract class AbstractReactiveSecurityFilter extends FilterCommon implem
         } catch (Exception e) {
             return ResponseUtil.returnWith(401, e.getMessage(), response);
         }
-
         authUserMap.put(requestId, user);
+        response.beforeCommit(() -> {
+            authUserMap.remove(requestId);
+            return Mono.empty();
+        });
 
         var rules = getAuthorizationRules();
         if (rules != null && !rules.isEmpty()) {
@@ -46,14 +48,13 @@ public abstract class AbstractReactiveSecurityFilter extends FilterCommon implem
                             || (rule.getType().equals(AuthRule.RuleType.HAS_ROLE) && matchesRole(user.getRoles(), rule.getRoles()))) {
                         break;
                     } else {
-                        ResponseUtil.returnWith(401, "Current action is not authorized!", response);
+                        return ResponseUtil.returnWith(401, "Current action is not authorized!", response);
                     }
                 }
             }
         }
 
-        return webFilterChain.filter(serverWebExchange.mutate().request(request).build())
-                .thenEmpty(_v -> authUserMap.remove(requestId));
+        return webFilterChain.filter(serverWebExchange);
     }
 
 

@@ -17,8 +17,7 @@ public final class ResponseUtil {
         }
 
         var msg = response.bufferFactory().wrap(message.getBytes());
-        response.writeAndFlushWith(Mono.just(Mono.just(msg)));
-        return response.setComplete();
+        return response.writeWith(Mono.just(msg));
     }
     public static final void returnWith(final int status, final String message, final HttpServletResponse response) {
         response.setStatus(status);
