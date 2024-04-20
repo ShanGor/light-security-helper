@@ -10,6 +10,6 @@ public class AuthContext {
         if (StringUtils.isBlank(requestId)) {
             return null;
         }
-        return AbstractSecurityFilter.authUserMap.get(requestId);
+        return AbstractReactiveSecurityFilter.authUserMap.get(requestId);
     }
 }

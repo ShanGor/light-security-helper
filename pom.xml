@@ -9,15 +9,19 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>cn.gzten.security</groupId>
-	<artifactId>light-security-helper-reactive</artifactId>
+	<artifactId>light-security-helper</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>light-security-helper-reactive</name>
-	<description>Lightweight security Helper, for Spring Webflux</description>
+	<name>light-security-helper</name>
+	<description>Lightweight security Helper, for Spring Boot</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
-
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webflux</artifactId>

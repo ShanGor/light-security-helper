@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static cn.gzten.security.security.AuthContext.AUTH_HEADER_ID;
 
 @Slf4j
-public abstract class AbstractSecurityFilter implements WebFilter {
+public abstract class AbstractReactiveSecurityFilter implements WebFilter {
 
     public abstract List<AuthRule> getAuthorizationRules();
 

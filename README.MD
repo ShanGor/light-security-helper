@@ -6,7 +6,7 @@ However, every time it upgrades, the API and usage changes. It would be hard for
 
 So I created this library to help you to do simple and fast security configuration easily, without Spring Security.
 
-## Usage
+## Usage For Spring MVC
 - Add the dependency to your pom.xml
 - Implement your `SecurityFilter` to extend the `AbstractSecurityFilter`
   ```
