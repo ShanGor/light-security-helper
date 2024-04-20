@@ -61,3 +61,11 @@ So I created this library to help you to do simple and fast security configurati
        return result;
    }
   ```
+  
+# Some Utility
+```
+git config --global http.proxy socks5://127.0.0.1:10001
+git config --global https.proxy socks5://127.0.0.1:10001
+git config --global unsert http.proxy
+git config --global unsert https.proxy
+```
