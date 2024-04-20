@@ -13,7 +13,7 @@ public class AuthUser {
     public static final String AUTH_USER = "auth_user";
 
     private String username;
-    private List<String> roles = EMPTY_LIST;
+    private List<String> roles = new LinkedList<>();;
 
     public AuthUser(boolean anonymous) {
         this.anonymous = anonymous;
@@ -29,5 +29,4 @@ public class AuthUser {
 
     private boolean anonymous = false;
     public static final AuthUser ANONYMOUS_USER = new AuthUser(true);
-    private static final List<String> EMPTY_LIST = new LinkedList<>();
 }
