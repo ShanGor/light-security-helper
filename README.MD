@@ -8,6 +8,23 @@ So I created this library to help you to do simple and fast security configurati
 ## Usage
 - Add the dependency to your pom.xml
 - Implement your `SecurityFilter` to extend the `AbstractSecurityFilter`
+  ```
+  @Slf4j
+  @Configuration
+  @Order(1)
+  public class DefaultSecurityFilter extends AbstractSecurityFilter {
+  public List<AuthRule> getAuthorizationRules() {
+  return List.of(new AuthRuleExactMatch("/test", AuthRule.ALL_METHODS, AuthRule.RuleType.ANONYMOUS, null));
+  }
+  
+      public Optional<AuthUser> getAuthUser(HttpServletRequest request) {
+          var user = new AuthUser();
+          user.setUsername("samuel");
+          user.addRole("admin");
+          return Optional.of(user);
+      }
+  }
+  ```
 - Inject `AuthUser` with `@RequestAttribute(AuthUser.AUTH_USER) AuthUser user`
    ```
     @GetMapping("/test")
