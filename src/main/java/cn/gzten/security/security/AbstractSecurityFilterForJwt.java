@@ -24,12 +24,15 @@ public abstract class AbstractSecurityFilterForJwt extends AbstractSecurityFilte
         String token = tryToGetHeader(headerNameForToken(), request);
         try {
             var res = parseJwt(token, jwtUsernameKey(), jwtRolesKey());
-            var key = getJwtKeyForVerification(res.getContent());
-            Jwts.parser().verifyWith(key).build().parse(res.getToken());
-
-            return Optional.of(res.getUser());
+            try {
+                var key = getJwtKeyForVerification(res.getContent());
+                Jwts.parser().verifyWith(key).build().parse(res.getToken());
+                return Optional.of(res.getUser());
+            } catch (JwtException e) {
+                throw new RuntimeException(e.getMessage());
+            }
         } catch (JwtException e) {
-            throw e;
+            return Optional.empty();
         }
     }
 }
