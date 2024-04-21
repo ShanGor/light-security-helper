@@ -86,3 +86,5 @@ git config --global https.proxy socks5://127.0.0.1:10001
 git config --global --unset http.proxy
 git config --global --unset https.proxy
 ```
+Deploy to Maven tips: https://central.sonatype.org/publish/requirements/gpg/ (After posted the keys to keyserver.ubuntu.com, need to wait a bit as sonatype got caches.)  
+`clean deploy -Psigning`
