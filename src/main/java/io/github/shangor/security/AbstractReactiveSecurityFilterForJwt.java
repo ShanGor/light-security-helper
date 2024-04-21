@@ -1,4 +1,4 @@
-package cn.gzten.security.security;
+package io.github.shangor.security;
 
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -8,8 +8,6 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import java.security.PublicKey;
 import java.util.Map;
 import java.util.Optional;
-
-import static cn.gzten.security.security.JwtResult.parseJwt;
 
 @Slf4j
 public abstract class AbstractReactiveSecurityFilterForJwt extends AbstractReactiveSecurityFilter {
@@ -24,7 +22,7 @@ public abstract class AbstractReactiveSecurityFilterForJwt extends AbstractReact
     protected Optional<AuthUser> getAuthUser(ServerHttpRequest request) {
         String token = tryToGetHeader(headerNameForToken(), request);
         try {
-            var res = parseJwt(token, jwtUsernameKey(), jwtRolesKey());
+            var res = JwtResult.parseJwt(token, jwtUsernameKey(), jwtRolesKey());
             try {
                 var key = getJwtKeyForVerification(res.getContent());
                 Jwts.parser().verifyWith(key).build().parse(res.getToken());

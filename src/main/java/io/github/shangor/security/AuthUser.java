@@ -1,4 +1,4 @@
-package cn.gzten.security.security;
+package io.github.shangor.security;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

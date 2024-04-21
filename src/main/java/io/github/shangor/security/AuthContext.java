@@ -1,4 +1,4 @@
-package cn.gzten.security.security;
+package io.github.shangor.security;
 
 import io.micrometer.common.util.StringUtils;
 import org.springframework.http.server.reactive.ServerHttpRequest;

@@ -1,4 +1,4 @@
-package cn.gzten.security.security;
+package io.github.shangor.security;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.jsonwebtoken.JwtException;

@@ -1,4 +1,4 @@
-package cn.gzten.security.security;
+package io.github.shangor.security;
 
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -7,8 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.security.PublicKey;
 import java.util.*;
-
-import static cn.gzten.security.security.JwtResult.parseJwt;
 
 @Slf4j
 public abstract class AbstractSecurityFilterForJwt extends AbstractSecurityFilter {
@@ -23,7 +21,7 @@ public abstract class AbstractSecurityFilterForJwt extends AbstractSecurityFilte
     protected Optional<AuthUser> getAuthUser(HttpServletRequest request) {
         String token = tryToGetHeader(headerNameForToken(), request);
         try {
-            var res = parseJwt(token, jwtUsernameKey(), jwtRolesKey());
+            var res = JwtResult.parseJwt(token, jwtUsernameKey(), jwtRolesKey());
             try {
                 var key = getJwtKeyForVerification(res.getContent());
                 Jwts.parser().verifyWith(key).build().parse(res.getToken());
