@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>cn.gzten.security</groupId>
 	<artifactId>light-security-helper</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>light-security-helper</name>
 	<description>Lightweight security Helper, for Spring Boot</description>
 	<properties>
