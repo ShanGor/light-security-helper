@@ -9,7 +9,7 @@ So I created this library to help you to do simple and fast security configurati
 ## Usage For Spring MVC
 - Add the dependency to your pom.xml
 - Implement your `SecurityFilter` to extend the `AbstractSecurityFilter`. (Further more do `AbstractSecurityFilterForJwt`)
-  ```
+  ``` Java
   @Slf4j
   @Configuration
   @Order(1)
@@ -27,7 +27,7 @@ So I created this library to help you to do simple and fast security configurati
   }
   ```
 - Inject `AuthUser` with `@RequestAttribute(AuthUser.AUTH_USER) AuthUser user`
-   ```
+   ``` Java
     @GetMapping("/test")
     public AuthUser test(@RequestAttribute(AuthUser.AUTH_USER) AuthUser user) {
         return user;
@@ -36,7 +36,7 @@ So I created this library to help you to do simple and fast security configurati
 ## Usage For Webflux
 - Add the dependency to your pom.xml
 - Implement your `SecurityFilter` to extend the `AbstractReactiveSecurityFilter`  (Further more do `AbstractReactiveSecurityFilterForJwt`)
-  ```
+  ``` Java
   @Component
   @Order(1)
   public class SecurityFilter extends AbstractReactiveSecurityFilter {
@@ -61,9 +61,25 @@ So I created this library to help you to do simple and fast security configurati
        return result;
    }
   ```
-  
-# Some Utility
+## Tips
+To override the default header name and jwt keys, you can override the following methods in your `SecurityFilter`.
+``` Java
+// Default values are:
+protected String headerNameForToken() {
+    return "Authorization";
+}
+
+protected String jwtUsernameKey() {
+    return "username";
+}
+
+protected String jwtRolesKey() {
+    return "roles";
+}
 ```
+
+# Some Utility
+``` Bash
 git config --global http.proxy socks5://127.0.0.1:10001
 git config --global https.proxy socks5://127.0.0.1:10001
 git config --global --unset http.proxy
