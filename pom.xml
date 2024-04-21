@@ -17,6 +17,26 @@
 		<java.version>17</java.version>
 		<jjwt-version>0.12.5</jjwt-version>
 	</properties>
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>http://www.opensource.org/licenses/mit-license.php</url>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<name>Samuel Chan</name>
+			<email>emschan@live.cn</email>
+			<organization>io.github.shangor</organization>
+			<organizationUrl>https://shangor.github.io</organizationUrl>
+		</developer>
+	</developers>
+	<scm>
+		<connection>scm:git:git://github.com/ShanGor/light-security-helper.git</connection>
+		<developerConnection>scm:git:ssh://github.com:ShanGor/light-security-helper.git</developerConnection>
+		<url>http://github.com/ShanGor/light-security-helper/tree/master</url>
+	</scm>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -91,24 +111,13 @@
 	<build>
 		<plugins>
 			<plugin>
-				<!-- add maven package plugin -->
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.3.0</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.4.1</version>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<phase>package</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.11.0</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.sonatype.central</groupId>
@@ -118,6 +127,8 @@
 				<configuration>
 					<publishingServerId>central</publishingServerId>
 					<tokenAuth>true</tokenAuth>
+					<autoPublish>true</autoPublish>
+					<waitUntil>published</waitUntil>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -127,13 +138,26 @@
 				<executions>
 					<execution>
 						<id>attach-sources</id>
-						<phase>package</phase>
 						<goals>
 							<goal>jar-no-fork</goal>
 						</goals>
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.4.1</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
 		</plugins>
 	</build>
 
@@ -178,4 +202,5 @@
 			</build>
 		</profile>
 	</profiles>
+
 </project>
