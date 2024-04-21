@@ -1,5 +1,6 @@
 package cn.gzten.security.security;
 
+import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,7 +28,7 @@ public abstract class AbstractSecurityFilter extends FilterCommon implements Fil
             }
             request.setAttribute(AuthUser.AUTH_USER, user);
         } catch (Exception e) {
-            ResponseUtil.returnWith(401, e.getMessage(), response);
+            returnWith(401, e.getMessage(), response);
             return;
         }
 
@@ -40,7 +41,7 @@ public abstract class AbstractSecurityFilter extends FilterCommon implements Fil
                             || (rule.getType().equals(AuthRule.RuleType.HAS_ROLE) && matchesRole(user.getRoles(), rule.getRoles()))) {
                         break;
                     } else {
-                        ResponseUtil.returnWith(401, "Current action is not authorized!", response);
+                        returnWith(401, "Current action is not authorized!", response);
                         return;
                     }
                 }
@@ -48,6 +49,20 @@ public abstract class AbstractSecurityFilter extends FilterCommon implements Fil
         }
 
         filterChain.doFilter(servletRequest, servletResponse);
+    }
+
+    public static final void returnWith(final int status, final String message, final HttpServletResponse response) {
+        response.setStatus(status);
+        if (StringUtils.isBlank(message)) {
+            return;
+        }
+
+        try (var out = response.getWriter()){
+            out.println(message);
+            out.flush();
+        } catch (IOException e) {
+            log.error("Failed to write response {}", e.getMessage());
+        }
     }
 
     public static boolean matchesRole(List<String> roles, List<String> orRoles) {

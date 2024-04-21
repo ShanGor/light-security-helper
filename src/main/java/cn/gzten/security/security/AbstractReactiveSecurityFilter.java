@@ -1,7 +1,9 @@
 package cn.gzten.security.security;
 
+import io.micrometer.common.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
@@ -31,7 +33,7 @@ public abstract class AbstractReactiveSecurityFilter extends FilterCommon implem
                 user = a.get();
             }
         } catch (Exception e) {
-            return ResponseUtil.returnWith(401, e.getMessage(), response);
+            return returnWith(401, e.getMessage(), response);
         }
         authUserMap.put(requestId, user);
         response.beforeCommit(() -> {
@@ -48,7 +50,7 @@ public abstract class AbstractReactiveSecurityFilter extends FilterCommon implem
                             || (rule.getType().equals(AuthRule.RuleType.HAS_ROLE) && matchesRole(user.getRoles(), rule.getRoles()))) {
                         break;
                     } else {
-                        return ResponseUtil.returnWith(401, "Current action is not authorized!", response);
+                        return returnWith(401, "Current action is not authorized!", response);
                     }
                 }
             }
@@ -57,6 +59,15 @@ public abstract class AbstractReactiveSecurityFilter extends FilterCommon implem
         return webFilterChain.filter(serverWebExchange);
     }
 
+    public static final Mono<Void> returnWith(final int status, final String message, final ServerHttpResponse response) {
+        response.setRawStatusCode(status);
+        if (StringUtils.isBlank(message)) {
+            return response.setComplete();
+        }
+
+        var msg = response.bufferFactory().wrap(message.getBytes());
+        return response.writeWith(Mono.just(msg));
+    }
 
     public static boolean matchesRole(List<String> roles, List<String> orRoles) {
         if (roles == null || roles.isEmpty() || orRoles == null || orRoles.isEmpty()) {
