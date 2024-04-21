@@ -62,6 +62,7 @@ So I created this library to help you to do simple and fast security configurati
    }
   ```
 ## Tips
+### Default Values
 To override the default header name and jwt keys, you can override the following methods in your `SecurityFilter`.
 ``` Java
 // Default values are:
